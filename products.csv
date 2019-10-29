@@ -1,11 +1,11 @@
-item_id,product_name,department_name,price,quantity
-1,Table,Home,50.99,506
-2,Purse,Clothes & Accessories,25.50,100
-3,TV,Electronics,699.69,1048
-4,Laptop,Electronics,999.99,2541
-5,Sunglasses,Clothes & Accessories,15.00,4893
-6,Dresser,Bedroom,375.25,282
-7,Mirror,Bedroom,75.00,27
-8,Balexa,Electronics,150.00,717
-9,Bookshelf,Home,199.00,15
-10,Towel,Bathroom,12.99,333
+item_id,product_name,product_sales,department_name,price,quantity
+1,Table,0,Home,50.99,506
+2,Purse,0,Clothes & Accessories,25.50,100
+3,TV,0,Electronics,699.69,1048
+4,Laptop,0,Electronics,999.99,2541
+5,Sunglasses,0,Clothes & Accessories,15.00,4893
+6,Dresser,0,Bedroom,375.25,282
+7,Mirror,0,Bedroom,75.00,27
+8,Balexa,0,Electronics,150.00,717
+9,Bookshelf,0,Home,199.00,15
+10,Towel,0,Bathroom,12.99,333

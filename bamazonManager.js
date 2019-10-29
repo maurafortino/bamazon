@@ -27,7 +27,7 @@ function showMenu() {
             type: "list",
             message: "What do you want to check?",
             name: "options",
-            choices: ["View Products for Sale", "View Low Inventory", "Add to Inventory", "Add New Product"]
+            choices: ["View Products for Sale", "View Low Inventory", "Add to Inventory", "Add New Product", "Exit"]
         }
     ]).then(function (answer) {
         switch (answer.options) {
@@ -46,6 +46,10 @@ function showMenu() {
             case "Add New Product":
                 addProduct();
                 break;
+            
+            case "Exit":
+                exitView();
+                break;
         }
     });
 };
@@ -56,8 +60,9 @@ function viewProducts() {
      function (err, res) {
             if (err) throw err;
             for (var i = 0; i < res.length; i++) {
-                console.log("Item Id: " + res[i].item_id + " || Item name: " + res[i].product_name + " || Price: " + res[i].price + " || Quantity: " + res[i].quantity);
+                console.log("Item Id: " + res[i].item_id + " || Item name: " + res[i].product_name + " || Product_sales: " + res[i].product_sales + " || Price: " + res[i].price + " || Quantity: " + res[i].quantity);
             };
+           tryAgain();
         }
     );
     console.log(query.sql);
@@ -70,9 +75,11 @@ function viewLowInventory (){
         if (err) throw err;
         if(res.length === 0){
             console.log("No Low Inventory.");
+            tryAgain();
         }else{
             for(var i = 0; i < res.length; i++){
                 console.log(res[i]);
+                tryAgain();
             };
         };
       }
@@ -109,13 +116,13 @@ function addInventory(){
         connection.query(query, {item_id: answer.itemID},
             function(err,result){
                 if(err) throw err;
-                query = "UPDATE products SET quantity = " + (parseInt(result[0].quantity) + parseInt(answer.addition)) + " WHERE item_id = " + answer.itemID;
-                connection.query( function(err, res){
+                query = connection.query("UPDATE products SET quantity = " + (parseInt(result[0].quantity) + parseInt(answer.addition)) + " WHERE item_id = " + answer.itemID, (function(err, res){
                     if(err) throw err;
                     return res;
-                });
-                showMenu();
-            })
+                })
+            )
+            tryAgain();
+        })
     })
 };
 
@@ -142,11 +149,33 @@ function addProduct(){
             name: "quantity"
         }
     ]).then(function(answer){
-        var query = "INSERT INTO products (product_name, department_name, price, quantity) VALUES (?, ?, ?, ?)"
-        connection.query(query, [answer.name, answer.department, answer.price, answer.quantity], function(err, res){
+        var query = "INSERT INTO products (product_name, product_sales, department_name, price, quantity) VALUES (?, ?, ?, ?, ?)"
+        connection.query(query, [answer.name, 0, answer.department, answer.price, answer.quantity], function(err, res){
             if(err) throw err;
             return res;
         });
-        showMenu();
+        tryAgain();
     });
+};
+
+//prompts the manaer if they would like to look at something else
+function tryAgain(){
+    inquirer.prompt([
+        {
+            type: "confirm",
+            message: "Would you like to look at something else?",
+            name: "tryAgain"
+        }
+    ]).then(function(answer){
+        if(answer.tryAgain){
+            showMenu();
+        }else{
+            exitView();
+        }
+    });
+};
+
+function exitView(){
+    console.log("Good-bye!");
+    connection.end();
 };

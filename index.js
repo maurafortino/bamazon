@@ -64,14 +64,14 @@ var connection = mysql.createConnection({
     ]).then(function(answer){
         //the output of the user inputs - this portion searches for the item based off the item ID
         console.log("Your order: " + answer.quantity + " units of item with ID of " + answer.itemID);
-        var query = "SELECT product_name, quantity, price FROM products WHERE ?";
+        var query = "SELECT product_name, product_sales, quantity, price FROM products WHERE ?";
         connection.query(query, {item_id: answer.itemID},
             function(err, res){
                 if(err) throw err;
                 //if the current quantity of the item is greater or equal to the quantity wanted by the user - order is successful
                 if(res[0].quantity >= answer.quantity){
                     //updates the number in the database
-                    query = "UPDATE products SET quantity = " + (res[0].quantity - answer.quantity) + " WHERE item_id = " + answer.itemID;
+                    var query = ("UPDATE products SET quantity = " + (res[0].quantity - answer.quantity) + ", product_sales = " + (res[0].product_sales + (answer.quantity * res[0].price)) + " WHERE item_id = " + answer.itemID);
                     connection.query(query, function(err, result){
                         if(err) throw err;
                         return result;
@@ -92,7 +92,7 @@ function orderAgain(){
     inquirer.prompt([
         {
             type: "confirm",
-            message: "Would you like to purchase another oder?",
+            message: "Would you like to purchase another order?",
             name: "orderAgain"
         }
     ]).then(function(response){
@@ -100,6 +100,7 @@ function orderAgain(){
             showItems();
         }else{
             console.log("Thank you and have a nice day!");
+            connection.end();
         };
     });
 };
