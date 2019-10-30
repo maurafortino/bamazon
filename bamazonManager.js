@@ -70,7 +70,7 @@ function viewProducts() {
 
 //check on inventory lower than 5
 function viewLowInventory (){
-    connection.query("SELECT product_name, SUM(quantity) AS 'current quantity' FROM products GROUP BY product_name HAVING  SUM(quantity) < 5", 
+    connection.query("SELECT product_name, SUM(quantity) AS 'current_quantity' FROM products GROUP BY product_name HAVING  SUM(quantity) < 5", 
     function(err, res) {
         if (err) throw err;
         if(res.length === 0){
@@ -78,9 +78,10 @@ function viewLowInventory (){
             tryAgain();
         }else{
             for(var i = 0; i < res.length; i++){
-                console.log(res[i]);
-                tryAgain();
+                console.log("Product: " + res[i].product_name + " \nCurrent Quantity: " + res[i].current_quantity);
+                console.log("---------------------");
             };
+            tryAgain();
         };
       }
     );
@@ -141,12 +142,24 @@ function addProduct(){
         {
             type: "input",
             message: "How much does each item cost?",
-            name: "price"
+            name: "price",
+            validate: function(value) {
+                if (isNaN(value) === false) {
+                  return true;
+                }
+                return false;
+              }
         },
         {
             type: "input",
             message: "How much of this item is available to purchase?",
-            name: "quantity"
+            name: "quantity",
+            validate: function(value) {
+                if (isNaN(value) === false) {
+                  return true;
+                }
+                return false;
+              }
         }
     ]).then(function(answer){
         var query = "INSERT INTO products (product_name, product_sales, department_name, price, quantity) VALUES (?, ?, ?, ?, ?)"

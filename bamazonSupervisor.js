@@ -35,9 +35,9 @@ function showMenu(){
             viewDepartments();
             break;
 
-            // case "Create New Department":
-            // createDepartment();
-            // break;
+            case "Create New Department":
+            createDepartment();
+            break;
 
             case "Exit":
             exitView();
@@ -47,8 +47,10 @@ function showMenu(){
 };
 
 function viewDepartments(){
-    var query = "SELECT departments.department_id, departments.department_name, departments.over_head_costs, products.department_name, products.product_sales FROM departments INNER JOIN products ON (departments.department_name = products.department_name)";
-    // query += "FROM departments INNER JOIN products ON (departments.department_name = products.department_name";
+    var query = "SELECT departments.department_id, departments.department_name, departments.over_head_costs, products.department_name, products.product_sales "
+    query += "FROM departments LEFT JOIN products ON (departments.department_name = products.department_name) "
+    query += "GROUP BY departments.department_id, departments.department_name, departments.over_head_costs, products.department_name, products.product_sales "
+    query += "ORDER BY departments.department_id";
     connection.query(query, function(err, res){
         if (err) throw err;
         for(var i = 0; i < res.length; i++){
@@ -58,6 +60,34 @@ function viewDepartments(){
         showMenu();
     });
 };
+
+function createDepartment(){
+    inquirer.prompt([
+        {
+            type: "input",
+            message: "What department would you like to add?",
+            name: "name"
+        },
+        {
+            type: "input",
+            message: "What will the overhead cost be?",
+            name: "cost",
+            validate: function(value) {
+                if (isNaN(value) === false) {
+                  return true;
+                }
+                return false;
+              }   
+        }
+    ]).then(function(answer){
+        var query = "INSERT INTO departments (department_name, over_head_costs) VALUES (?, ?)"
+        connection.query(query, [answer.name, answer.cost], function(err, res){
+            if(err) throw err;
+            return (res);
+        });
+        showMenu()
+    });
+}
 
 function exitView(){
     console.log("Good-bye!");
