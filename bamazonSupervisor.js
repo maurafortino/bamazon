@@ -47,9 +47,9 @@ function showMenu(){
 };
 
 function viewDepartments(){
-    var query = "SELECT departments.department_id, departments.department_name, departments.over_head_costs, products.department_name, products.product_sales "
+    var query = "SELECT departments.department_id, departments.department_name, departments.over_head_costs, products.department_name, SUM(products.product_sales) AS product_sales "
     query += "FROM departments LEFT JOIN products ON (departments.department_name = products.department_name) "
-    query += "GROUP BY departments.department_id, departments.department_name, departments.over_head_costs, products.department_name, products.product_sales "
+    query += "GROUP BY departments.department_id, departments.department_name, departments.over_head_costs, products.department_name "
     query += "ORDER BY departments.department_id";
     connection.query(query, function(err, res){
         if (err) throw err;
